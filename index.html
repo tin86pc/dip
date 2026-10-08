@@ -7,44 +7,44 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>
     <style>
         * {margin:0; padding:0; box-sizing:border-box; font-family:sans-serif;}
-        body {padding:2rem; max-width:500px; margin:0 auto; background:#f5f5f7;}
+        body {padding:2rem; max-width:550px; margin:0 auto; background:#f5f5f7;}
 
         .mode {text-align:center; margin-bottom:1.5rem;}
         .mode-btn {
             padding:0.7rem 1.2rem; border:2px solid #0071e3; background:#fff;
-            color:#0071e3; border-radius:8px; cursor:pointer; font-weight:bold;
+            color:#0071e3; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1.1rem;
         }
         .mode-btn.active {background:#0071e3; color:#fff;}
 
         .input-box {margin-bottom:1.5rem;}
         input {
-            width:100%; padding:0.8rem; font-size:1.1rem; border:2px solid #ddd;
-            border-radius:8px; text-align:center; outline:none;
+            width:100%; padding:1rem; font-size:1.4rem; border:2px solid #ddd;
+            border-radius:8px; text-align:center; outline:none; font-weight:bold;
         }
         input:focus {border-color:#0071e3;}
 
         .dip-wrap {
-            display:flex; justify-content:center; gap:6px;
-            background:#333; padding:1.5rem; border-radius:10px; margin-bottom:1.5rem;
+            display:flex; justify-content:center; gap:8px;
+            background:#333; padding:1.8rem 1rem; border-radius:12px; margin-bottom:1.8rem;
         }
         .dip {display:flex; flex-direction:column; align-items:center; cursor:pointer;}
-        .dip-num {color:#fff; font-size:0.8rem; margin-bottom:4px;}
+        .dip-num {color:#fff; font-size:1rem; font-weight:bold; margin-bottom:6px;}
         .dip-bar {
-            width:26px; height:50px; background:#555; border-radius:4px; position:relative;
+            width:32px; height:60px; background:#555; border-radius:5px; position:relative;
         }
         .dip-bar.on .knob {top:0;}
         .dip-bar.off .knob {top:50%;}
         .knob {
-            position:absolute; width:100%; height:50%; background:#fff; border-radius:3px;
+            position:absolute; width:100%; height:50%; background:#fff; border-radius:4px;
             transition:top .2s;
         }
 
-        .result {text-align:center; background:#fff; padding:1rem; border-radius:8px; margin-bottom:2rem;}
-        .bin {font-size:1.5rem; font-weight:bold; color:#0071e3; font-family:monospace; letter-spacing:2px;}
-        .dec {font-size:1.8rem; font-weight:bold; color:#e37100; margin-top:0.3rem;}
+        .result {text-align:center; background:#fff; padding:1.5rem; border-radius:10px; margin-bottom:2rem; box-shadow:0 2px 10px rgba(0,0,0,.1);}
+        .bin {font-size:2.2rem; font-weight:bold; color:#0071e3; font-family:monospace; letter-spacing:4px;}
+        .dec {font-size:2.8rem; font-weight:bold; color:#e37100; margin-top:0.8rem;}
 
         .qr-section {text-align:center; padding:1.5rem; background:#fff; border-radius:10px;}
-        .qr-title {font-size:0.9rem; color:#666; margin-bottom:1rem;}
+        .qr-title {font-size:1rem; color:#666; margin-bottom:1rem;}
         #qrcode {display:flex; justify-content:center;}
         #qrcode img {border:4px solid #f5f5f7; border-radius:8px;}
     </style>
@@ -52,7 +52,7 @@
 <body>
 
     <div class="mode">
-        <button class="mode-btn active" id="modeBtn">⬅️ Trái → Phải</button>
+        <button class="mode-btn active" id="modeBtn">➡️ Phải → Trái</button>
     </div>
 
     <div class="input-box">
@@ -66,14 +66,14 @@
         <div class="dec" id="decValue">0</div>
     </div>
 
-    <!-- Mã QR chia sẻ -->
     <div class="qr-section">
         <div class="qr-title">📱 Quét mã QR để chia sẻ trang này</div>
         <div id="qrcode"></div>
     </div>
 
     <script>
-        let isLTR = true;
+        // MẶC ĐỊNH: Phải → Trái
+        let isLTR = false;
         const dipWrap = document.getElementById('dipWrap');
         const modeBtn = document.getElementById('modeBtn');
         const numInput = document.getElementById('numInput');
@@ -133,7 +133,7 @@
             if (!isNaN(v)) setFromNumber(v);
         });
 
-        // Tạo mã QR cho trang hiện tại
+        // Tạo QR
         new QRCode(document.getElementById('qrcode'), {
             text: window.location.href,
             width: 180,
