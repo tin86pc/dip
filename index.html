@@ -18,7 +18,7 @@
 
         .input-box {margin-bottom:1.5rem;}
         input {
-            width:100%; padding:1rem; font-size:1.4rem; border:2px solid #ddd;
+            width:100%; padding:1rem; font-size:1.8rem; border:2px solid #ddd;
             border-radius:8px; text-align:center; outline:none; font-weight:bold;
         }
         input:focus {border-color:#0071e3;}
@@ -39,10 +39,6 @@
             transition:top .2s;
         }
 
-        .result {text-align:center; background:#fff; padding:1.5rem; border-radius:10px; margin-bottom:2rem; box-shadow:0 2px 10px rgba(0,0,0,.1);}
-        .bin {font-size:2.2rem; font-weight:bold; color:#0071e3; font-family:monospace; letter-spacing:4px;}
-        .dec {font-size:2.8rem; font-weight:bold; color:#e37100; margin-top:0.8rem;}
-
         .qr-section {text-align:center; padding:1.5rem; background:#fff; border-radius:10px;}
         .qr-title {font-size:1rem; color:#666; margin-bottom:1rem;}
         #qrcode {display:flex; justify-content:center;}
@@ -61,26 +57,17 @@
 
     <div class="dip-wrap" id="dipWrap"></div>
 
-    <div class="result">
-        <div class="bin" id="binCode">00000000</div>
-        <div class="dec" id="decValue">0</div>
-    </div>
-
     <div class="qr-section">
         <div class="qr-title">📱 Quét mã QR để chia sẻ trang này</div>
         <div id="qrcode"></div>
     </div>
 
     <script>
-        // MẶC ĐỊNH: Phải → Trái
         let isLTR = false;
         const dipWrap = document.getElementById('dipWrap');
         const modeBtn = document.getElementById('modeBtn');
         const numInput = document.getElementById('numInput');
-        const binCode = document.getElementById('binCode');
-        const decValue = document.getElementById('decValue');
 
-        // Tạo 8 công tắc
         const switches = [];
         for (let i = 1; i <= 8; i++) {
             const div = document.createElement('div');
@@ -97,8 +84,6 @@
         function refresh() {
             const bits = getBits();
             const show = isLTR ? bits : [...bits].reverse().join('');
-            binCode.textContent = show;
-            decValue.textContent = parseInt(show, 2);
             numInput.value = parseInt(show, 2);
         }
 
@@ -133,7 +118,6 @@
             if (!isNaN(v)) setFromNumber(v);
         });
 
-        // Tạo QR
         new QRCode(document.getElementById('qrcode'), {
             text: window.location.href,
             width: 180,
