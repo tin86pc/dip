@@ -35,8 +35,8 @@
         .dip-bar.on .knob {top:0;}
         .dip-bar.off .knob {top:50%;}
         .knob {
-            position:absolute; width:100%; height:50%; background:#fff; border-radius:4px;
-            transition:top .2s;
+            position:absolute; width:100%; height:50%; background:#4cd964; border-radius:4px;
+            transition:top .2s ease;
         }
 
         .qr-section {text-align:center; padding:1.5rem; background:#fff; border-radius:10px;}
@@ -48,7 +48,7 @@
 <body>
 
     <div class="mode">
-        <button class="mode-btn active" id="modeBtn">➡️ Phải → Trái</button>
+        <button class="mode-btn" id="modeBtn">➡️ Phải → Trái</button>
     </div>
 
     <div class="input-box">
@@ -63,12 +63,14 @@
     </div>
 
     <script>
-        let isLTR = false;
+        let isLTR = false; // Mặc định: Phải → Trái
         const dipWrap = document.getElementById('dipWrap');
         const modeBtn = document.getElementById('modeBtn');
         const numInput = document.getElementById('numInput');
 
         const switches = [];
+        
+        // Tạo 8 công tắc DIP
         for (let i = 1; i <= 8; i++) {
             const div = document.createElement('div');
             div.className = 'dip';
@@ -77,34 +79,41 @@
             switches.push(div.querySelector('.dip-bar'));
         }
 
+        // Lấy chuỗi bit từ các công tắc
         function getBits() {
             return switches.map(s => s.classList.contains('on') ? '1' : '0').join('');
         }
 
+        // Cập nhật ô số từ trạng thái công tắc
         function refresh() {
             const bits = getBits();
             const show = isLTR ? bits : [...bits].reverse().join('');
-            numInput.value = parseInt(show, 2);
+            numInput.value = parseInt(show, 2) || 0;
         }
 
+        // Cập nhật công tắc từ số nhập vào — ĐÃ SỬA LỖI
         function setFromNumber(n) {
-            n = Math.max(0, Math.min(255, n));
-            let bits = n.toString(2).padStart(8, '0');
-            if (!isLTR) bits = [...bits].reverse().join('');
+            n = Math.max(0, Math.min(255, n || 0)); // Giới hạn 0-255
+            let bits = n.toString(2).padStart(8, '0'); // Đảm bảo đủ 8 bit
+            if (!isLTR) bits = [...bits].reverse().join(''); // Đảo ngược nếu cần
+            
+            // Cập nhật từng công tắc
             switches.forEach((s, i) => {
-                s.classList.toggle('on', bits[i] === '1');
-                s.classList.toggle('off', bits[i] === '0');
+                const isOn = bits[i] === '1';
+                s.classList.toggle('on', isOn);
+                s.classList.toggle('off', !isOn);
             });
-            refresh();
         }
 
+        // Chuyển đổi thứ tự bit
         modeBtn.addEventListener('click', () => {
             isLTR = !isLTR;
             modeBtn.classList.toggle('active', isLTR);
             modeBtn.textContent = isLTR ? '⬅️ Trái → Phải' : '➡️ Phải → Trái';
-            refresh();
+            setFromNumber(parseInt(numInput.value) || 0); // Cập nhật lại ngay khi đổi chế độ
         });
 
+        // Nhấn công tắc thủ công → cập nhật số
         switches.forEach(s => {
             s.addEventListener('click', () => {
                 s.classList.toggle('on');
@@ -113,11 +122,21 @@
             });
         });
 
-        numInput.addEventListener('change', () => {
+        // ✅ SỬA Ở ĐÂY: Nhập số → tự cập nhật DIP ngay khi gõ
+        numInput.addEventListener('input', () => {
             const v = parseInt(numInput.value);
             if (!isNaN(v)) setFromNumber(v);
         });
 
+        // Khi nhấn Enter hoặc mất focus
+        numInput.addEventListener('change', () => {
+            let v = parseInt(numInput.value) || 0;
+            v = Math.max(0, Math.min(255, v)); // Đảm bảo giới hạn
+            numInput.value = v;
+            setFromNumber(v);
+        });
+
+        // Tạo mã QR
         new QRCode(document.getElementById('qrcode'), {
             text: window.location.href,
             width: 180,
@@ -127,6 +146,7 @@
             correctLevel: QRCode.CorrectLevel.M
         });
 
+        // Khởi tạo
         refresh();
     </script>
 </body>
